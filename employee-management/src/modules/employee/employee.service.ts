@@ -32,11 +32,10 @@ export class EmployeeService {
       const hashedPassword = await hashPassword(dto.password);
 
 
-      // Google Map → lat/lng from address
-      const { latitude, longitude } =
-        await this.mapService.getLatLng(dto.address);
+      // Google Map → get latitude/longitude from address
+      const { latitude, longitude } = await this.mapService.getLatLng(dto.address);
 
-      // 4️⃣ Create entity (ONLY entity fields)
+      // Create entity
       const employee = this.employeeRepo.create({
         latitude,
         longitude,
@@ -88,7 +87,7 @@ export class EmployeeService {
 
       // Pagination + sorting
       const [data, total] = await query
-        .orderBy('employee.createdAt', 'DESC')
+        .orderBy('employee.name', 'ASC')
         .skip((page - 1) * limit)
         .take(limit)
         .getManyAndCount();
@@ -199,36 +198,6 @@ export class EmployeeService {
   // FIND BY EMAIL
   async findByEmail(email: string) {
     return this.employeeRepo.findOne({ where: { email } });
-  }
-
-  // Map 
-  async findNearby(
-    lat: number,
-    lng: number,
-    radiusKm = 5,
-  ) {
-    const employees = await this.employeeRepo.find();
-
-    const nearby = employees
-      .map(emp => {
-        const distance = calculateDistance(
-          lat,
-          lng,
-          Number(emp.latitude),
-          Number(emp.longitude),
-        );
-
-        return { ...emp, distance };
-      })
-      .filter(emp => emp.distance <= radiusKm)
-      .sort((a, b) => a.distance - b.distance);
-
-    return {
-      success: true,
-      message: 'Nearby employees fetched successfully',
-      count: nearby.length,
-      data: nearby,
-    };
   }
 
 }
