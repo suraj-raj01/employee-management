@@ -5,7 +5,6 @@ import { Employee } from './entities/employee.entity';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { hashPassword } from '../../utils/password.util';
-import { calculateDistance } from 'src/utils/map';
 import { MapService } from '../maps/map.service';
 
 @Injectable()
